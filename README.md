@@ -1,10 +1,19 @@
-# Market Basket Analysis using Apriori Algorithm
-This project demonstrates how to perform Market Basket Analysis using the Apriori Algorithm implemented in Python. 
-The analysis helps in discovering frequent itemsets and association rules from transactional datasets, 
-providing actionable insights for businesses to enhance their sales strategies and optimize inventory management.
-My project consists of a CSV file titled- Groceries.csv, a Python file comprising code titled- work2.ipynb, and a text file that has my source code titled-code.txt.
+# Market Basket Analysis using Association Rule- Apriori Algorithm and Eclat Algorithm
+This project explores Market Basket Analysis (MBA), a data mining technique used to uncover associations between products in transactional datasets. 
+It focuses on implementing and comparing two popular algorithms: Apriori and Eclat.
 
-Apriori Algorithm-
-The Apriori algorithm is a classical algorithm used in data mining for mining frequent itemsets and relevant association rules. It operates on a database of transactions, where each transaction is a set of items.
-Association Rule-
-Association rules are implications of the form {A, B}→{C}, meaning that if a transaction contains items A and B, it is likely to contain item C as well. These rules are used to identify relationships between items in large datasets.
+Apriori Algorithm: Generates frequent itemsets using the downward closure property and derives association rules to identify product relationships. The implementation includes customizable parameters such as minimum support and confidence.
+
+Eclat Algorithm: A depth-first search algorithm that finds frequent itemsets by calculating itemset intersections, offering an alternative approach to Apriori.
+
+Datasets:
+-groceries.csv and items.csv datasets for Apriori analysis
+-An inbuilt sample dataset and eclat.csv for Eclat algorithm testing
+
+Objective: To analyze purchasing patterns and uncover meaningful insights for retail strategies.
+
+Python (pandas, mlxtend, itertools, etc.)
+GitHub for code versioning and sharing
+Jupyter Notebooks for interactive experimentation
+
+To be more specific, 4 jupyter notebooks are attached that includes the implementation.
