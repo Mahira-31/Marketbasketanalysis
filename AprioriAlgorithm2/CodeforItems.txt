@@ -1,0 +1,92 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+import networkx as nx
+import re
+
+df=pd.read_csv(r"C:\Users\Administrator\Items.csv")
+df
+
+df=df.drop(["Price","Country","Date","CustomerID"],axis=1)
+df
+
+df.info()
+
+df.isna().sum()
+
+df=df.dropna()
+
+x=df["Itemname"].value_counts().sort_values(ascending=False)[:20]
+x
+
+plt.figure(figsize=(10,6))
+plt.barh(x.index,x.values)
+plt.yticks(rotation=0)
+
+transactions=df.groupby(['BillNo','Itemname'])['Quantity'].sum().unstack().reset_index().set_index('BillNo')
+transactions[50:70]
+
+transactions=transactions.fillna(0)
+transactions[50:70]
+
+def encode(x):
+    if x<=0:
+        return 0
+    elif x>=0:
+        return 1
+
+basket=transactions.applymap(encode)
+basket[50:70]
+
+frequent_itemsets=apriori(basket,min_support=0.03,use_colnames=True,max_len=2)
+rules=association_rules(frequent_itemsets,metric="support",min_threshold=0.02)
+
+frequent_itemsets
+
+rules
+
+milk_rules = rules[rules['antecedents'].astype(str).str.contains('JUMBO BAG RED RETROSPOT')]
+milk_rules = milk_rules.sort_values(by=['lift'],ascending = [False]).reset_index(drop = True)
+milk_rules[milk_rules["confidence"]>=0.1]
+#display(milk_rules)
+
+def draw_network(rules,rules_to_show):
+    #directional graph from NetworkX
+    network=nx.DiGraph()
+
+    #loop through number of rules to show
+    for i in range(rules_to_show):
+
+        #add a rule node
+        network.add_node("R"+str(i),color="black") # Add rule node in black color
+
+        #add antecedents as nodes and edges
+        for antecedent in rules.iloc[i]['antecedents']:
+            network.add_node(antecedent,color='orange') # Add antecedent node with orange color
+            network.add_edge(antecedent,"R"+str(i),weight=2) # Link antecedent to rule
+
+        #add consequents as nodes and edges
+        for consequent in rules.iloc[i]['consequents']:
+            network.add_node(consequent,color='orange') # Add consequent node with orange color
+            network.add_edge("R"+str(i),consequent,weight=2) # Link rule to consequent
+
+    #extract node colors for visualization
+    node_colors=[network.nodes[node]['color'] for node in network.nodes]
+
+    #position nodes using spring layout
+    pos=nx.spring_layout(network,k=16,scale=1)
+
+    #draw the network graph
+    nx.draw(network,pos,node_color=node_colors,font_size=8)
+
+    #shift the text position upwards
+    for p in pos:
+        pos[p][1]+=0.12
+
+    #drawing labels
+    nx.draw_networkx_labels(network, pos)
+
+    #set title and display the graph
+    plt.title("Network Graph for Association Rules")
+draw_network(rules, 2)
