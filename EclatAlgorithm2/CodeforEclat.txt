@@ -1,0 +1,45 @@
+import pyECLAT
+import numpy as np
+import pandas as pd
+import plotly
+
+df=pd.read_csv("Eclat.csv",header=None)
+
+df
+
+df.info()
+
+from pyECLAT import ECLAT
+eclat = ECLAT(data=df)
+eclat.df_bin
+
+items_total = eclat.df_bin.astype(int).sum(axis=0)
+items_total
+
+items_per_transaction = eclat.df_bin.astype(int).sum(axis=1)
+items_per_transaction
+
+import pandas as pd
+df = pd.DataFrame({'items': items_total.index, 'transactions': items_total.values}) 
+df_table = df.sort_values("transactions", ascending=False)
+df_table.head(5).style.background_gradient(cmap='Blues')
+
+import plotly.express as px
+df_table["all"] = "Tree Map"
+fig = px.treemap(df_table.head(50), path=['all', "items"], values='transactions',
+                  color=df_table["transactions"].head(50),
+                )
+fig.show()
+
+min_support = 5/100
+min_combination = 2
+max_combination = max(items_per_transaction)
+rule_indices, rule_supports = eclat.fit(min_support=min_support,
+                                                 min_combination=min_combination,
+                                                 max_combination=max_combination,
+                                                 separator=' & ',
+                                                 verbose=True)
+
+import pandas as pd
+result = pd.DataFrame(rule_supports.items(),columns=['Item', 'Support'])
+result.sort_values(by=['Support'], ascending=False)
